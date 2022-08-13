@@ -10,5 +10,5 @@ data class User(
     val city: String,
     @SerializedName("ID") val id: Int,
     @SerializedName("PARENTID")
-    val parentId: Int
+    val parentId: String
 )
