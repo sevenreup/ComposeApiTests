@@ -1,6 +1,7 @@
 package com.skybox.composeapitests.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -13,7 +14,7 @@ import com.skybox.composeapitests.ui.theme.ComposeApiTestsTheme
 
 @Composable
 fun UserCard(user: User) {
-    Card {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(text = "${user.name} ${user.surname}")
             Text(text =  "${user.age}")

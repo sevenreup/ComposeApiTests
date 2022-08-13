@@ -13,18 +13,40 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: MainRepository) : ViewModel() {
     val filterValue = MutableLiveData("")
+    val isFilterMode = MutableLiveData(false)
     val userListResponse = MutableLiveData<Response<List<User>?>>(Response.Idle())
 
-    fun searchChange(value: String) {
-        filterValue.value = value
+    init {
+        getData(null)
+    }
 
-        if (value.length > 3) {
+    fun searchChange(value: String) {
+        isFilterMode.value = true
+        filterValue.value = value
+    }
+
+    fun searchData() {
+        filterValue.value?.let { value ->
             getData(value)
         }
     }
 
-    fun fetchAll() {
-        getData(null)
+    fun toggleFilterMode() {
+        isFilterMode.value = !(isFilterMode.value ?: false)
+    }
+
+    fun clearSearch() {
+        filterValue.value = ""
+    }
+
+    fun clearFilter() {
+        filterValue.value = ""
+        isFilterMode.value = false
+        refresh()
+    }
+
+    fun refresh() {
+        if (isFilterMode.value == true) searchData() else getData(null)
     }
 
     private fun getData(city: String?) {
