@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -15,8 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -116,10 +121,13 @@ fun TopAppBarWithFilter(viewModel: MainViewModel) {
 fun SearchBar(viewModel: MainViewModel) {
     val searchValue by viewModel.filterValue.observeAsState("")
     val showClearButton by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 10.dp)) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+    ) {
         Column(Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier
@@ -128,12 +136,21 @@ fun SearchBar(viewModel: MainViewModel) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextField(
-                    value = searchValue, onValueChange = { value ->
+                    value = searchValue,
+                    onValueChange = { value ->
                         viewModel.searchChange(value)
-                    }, placeholder = {
+                    },
+                    placeholder = {
                         Text(text = "Filter By City")
-                    }, modifier = Modifier
+                    },
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    modifier = Modifier
                         .padding(16.dp),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
                     trailingIcon = {
                         AnimatedVisibility(
                             visible = showClearButton,
@@ -151,7 +168,10 @@ fun SearchBar(viewModel: MainViewModel) {
                     }
                 )
                 IconButton(
-                    onClick = { viewModel.searchData() },
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.searchData()
+                    },
                     enabled = searchValue.isNotEmpty()
                 ) {
                     Icon(Icons.Default.Search, contentDescription = "")
